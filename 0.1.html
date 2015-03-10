@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Visualizador WebGL de OBJ usando Three.js</title>
+
+	<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+	</style>
+	
+	<script src="js/three.min.js"></script>
+	<script src="js/TrackballControls.js"></script>
+	<script src="js/OBJLoader.js"></script>
+	<!--<script src="js/Detector.js"></script>-->
+</head>
+
+<body>
+<script>
+	var canvas; //antes le llamaba container porque contenía la escena
+
+	var camera;
+	var controls;
+	var scene;
+	var renderer;
+
+	var mouseX = 0;
+	var mouseY = 0;
+
+	var ambient; //luz de ambiente
+	var aspectRatio = window.innerWidth / window.innerHeight;
+
+	//posible niebla para la fachada
+	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
+
+	//INICIALIZACIÓN
+	function init()
+	{
+		//div para el elemento canvas de la escena
+		canvas = document.createElement('div');
+		document.body.appendChild( canvas );
+	
+		//Ajustamos la distancia de la cámara, nuestro campo de visión
+		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
+		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 1000);
+		camera.position.z = 5;
+
+		//Comportamiento y sensibilidad de la cámara
+		controls = new THREE.TrackballControls( camera );
+		
+		controls.rotateSpeed = 5.0;
+		controls.zoomSpeed = 2.0;
+		controls.panSpeed = 0.5;
+
+		controls.noZoom = false;
+		controls.noPan = false;
+
+		controls.staticMoving = false; //el zoom queda mas fluído a false y con el zoomspeed puedo ajustarlo para que sea más visual y no se escape
+		controls.dynamicDampingFactor = 0.2; //QUE ES ESTO???
+
+
+		// Creamos la escena para añadirle los elementos
+		scene = new THREE.Scene();
+
+		ambient = new THREE.AmbientLight(0xFFFFFA); //casi negra
+		scene.add( ambient ); //añadimos la luz de ambiente a la escena
+
+		  // Luz direccional simple, para ver los sombreados.
+  		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+  		 directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
+  		 scene.add( directionalLight );
+  		 scene.add( camera );
+ 
+  		//Carga de texturas
+ 
+			var manager = new THREE.LoadingManager();
+			
+			manager.onProgress = function ( item, loaded, total )
+			{
+				console.log( item, loaded, total );
+			};
+
+			var texture = new THREE.Texture();
+			//var texture2 = new THREE.Texture();
+			var loaderTextura = new THREE.ImageLoader( manager );	
+  		
+			//función para poner las propiedades de la textura
+			//se carga la textura en png
+			loaderTextura.load('textures/marron.png', function ( image )
+			{
+				texture.image = image;
+				texture.needsUpdate = true;
+	
+				//lineas para texturas pequeñas y bajos polígonos
+				//texture.magFilter = THREE.NearestFilter;
+				//texture.minFilter = THREE.NearestMipMapLinearFilter;
+			});
+			
+			/// CARGAMOS EL OBJ ///
+			var loader = new THREE.OBJLoader ( manager );
+
+			//cuando se carga el OBJ esta función busca la malla de geometría
+			//y le aplica la textura
+			loader.load( 'models/cat.obj', function ( event )
+			{
+				var obj = event;
+				obj.traverse ( function ( child )
+				{
+					if(child instanceof THREE.Mesh)
+					{
+						child.material.map = texture;
+					}
+				} );
+
+				//escalamos el modelo si nos hace falta
+				//obj.scale = new THREE.vector3(0,0,0); PETA
+
+				//Se puede cambiar la posición del objeto para que
+				//no esté centrado y dejar espacio para texto de overlay
+				obj.position.y -= 0.5;
+				//en este caso como el objeto es un gato lo pongo un poco más abajo
+				scene.add( obj );
+			});
+
+
+/////////////////////////////////BLOQUE DE PRUEBAS//////////////////////////////////////////////////
+	/*		loaderTextura.load('textures/al.png', function ( image )
+			{
+				texture2.image = image;
+				texture2.needsUpdate = true;
+	
+				//lineas para texturas pequeñas y bajos polígonos
+				//texture.magFilter = THREE.NearestFilter;
+				//texture.minFilter = THREE.NearestMipMapLinearFilter;
+			});
+
+			loader.load( 'models/al.obj', function ( event )
+			{
+				obj = event;
+				obj.traverse ( function ( child )
+				{
+					if(child instanceof THREE.Mesh)
+					{
+						child.material.map = texture2;
+					}
+				} );
+
+				obj.position.y -= 3;
+				scene.add( obj );
+			});
+
+*/
+////////////////////////////// FIN PRUEBAS //////////////////
+
+
+			/// FIN DE CARGA DEL OBJ ///
+		//Ponemos el renderer al tamaño de la ventana y le 
+		//incluímos un CANVAS al HTML
+		renderer = new THREE.WebGLRenderer( {});
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		canvas.appendChild( renderer.domElement );
+
+	}
+
+	/// BUCLE DE RENDERIZACIÓN ///
+	function animate()
+	{
+		//Se llama a sí misma con cada fotograma, se puede cambiar la 
+		//rotación del objeto en cada llamada para crear una animación de giro
+		//nos da una frecuencia de 60 fps automáticamente sin necesidad de setInterval.
+		//Además si el usuario cambia de pestaña, la función se detiene, con lo que ahorra
+		//batería y procesamiento.
+		requestAnimationFrame( animate );
+
+		//en cada fotograma necesitamos calcular la nueva posición de la cámara
+		//y ponerla a mirar al centro de la escena
+		controls.update();
+		
+		//camera.lookAt(scene.position); si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
+		
+		//Aquí tendré que poner las directivas de acción de los filtros o las 
+		//llamadas a las funciones de los filtros porque 
+		//son activados durante la visualización del modelado.
+		
+		renderer.render(scene, camera);
+	}
+
+init();
+animate();
+
+</script>
+
+</body>
+
+</html>
