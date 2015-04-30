@@ -14,7 +14,8 @@
 	
 	<script src="js/three.min.js"></script>
 	<script src="js/TrackballControls.js"></script>
-	<script src="js/OBJLoader.js"></script>
+	<script src="js/MTLLoader.js"></script>
+	<script src="js/OBJMTLLoader.js"></script>
 	<!--<script src="js/Detector.js"></script>-->
 </head>
 
@@ -61,53 +62,15 @@
   		 directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
   		 scene.add( directionalLight );
   		 scene.add( camera );
- 
-  		//Carga de texturas
- 
-			var manager = new THREE.LoadingManager();
-			
-			manager.onProgress = function ( item, loaded, total )
-			{
-				console.log( item, loaded, total );
-			};
-			var texture = new THREE.Texture();
-			//var texture2 = new THREE.Texture();
-			var loaderTextura = new THREE.ImageLoader( manager );	
-  		
-			//función para poner las propiedades de la textura
-			//se carga la textura en png
-			loaderTextura.load('textures/marron.png', function ( image )
-			{
-				texture.image = image;
-				texture.needsUpdate = true;
-	
-				//lineas para texturas pequeñas y bajos polígonos
-				//texture.magFilter = THREE.NearestFilter;
-				//texture.minFilter = THREE.NearestMipMapLinearFilter;
-			});
-			
-			/// CARGAMOS EL OBJ ///
-			var loader = new THREE.OBJLoader ( manager );
-			//cuando se carga el OBJ esta función busca la malla de geometría
-			//y le aplica la textura
-			loader.load( 'models/cat.obj', function ( event )
-			{
-				var obj = event;
-				obj.traverse ( function ( child )
-				{
-					if(child instanceof THREE.Mesh)
-					{
-						child.material.map = texture;
-					}
-				} );
-				//escalamos el modelo si nos hace falta
-				//obj.scale = new THREE.vector3(0,0,0); PETA
-				//Se puede cambiar la posición del objeto para que
-				//no esté centrado y dejar espacio para texto de overlay
-				obj.position.y -= 0.5;
-				//en este caso como el objeto es un gato lo pongo un poco más abajo
-				scene.add( obj );
-			});
+
+
+  		//Carga de Modelo
+				var loader = new THREE.OBJMTLLoader();
+				loader.load( 'models/b.obj', 'textures/b.mtl', function ( object ) {
+					object.position.y = - 80;
+
+					scene.add( object );
+				});
 			/// FIN DE CARGA DEL OBJ ///
 		
 		//Ponemos el renderer al tamaño de la ventana y le 
@@ -115,8 +78,7 @@
 		renderer = new THREE.WebGLRenderer( {});
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		canvas.appendChild( renderer.domElement );
-		
-
+	
 	}
 	
 	/// BUCLE DE RENDERIZACIÓN ///
@@ -137,7 +99,7 @@
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque 
 		//son activados durante la visualización del modelado.
-		
+
 		window.addEventListener( 'resize', onWindowResize, false );
 
 		render();
@@ -145,7 +107,7 @@
 
 	function onWindowResize() 
 	{
-	    camera.aspect = window.innerWidth / window.innerHeight;
+	    camera.aspect = aspectRatio;
     	camera.updateProjectionMatrix();
 
     	renderer.setSize(window.innerWidth, window.innerHeight);
