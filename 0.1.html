@@ -108,38 +108,17 @@
 				//en este caso como el objeto es un gato lo pongo un poco más abajo
 				scene.add( obj );
 			});
-/////////////////////////////////BLOQUE DE PRUEBAS//////////////////////////////////////////////////
-	/*		loaderTextura.load('textures/al.png', function ( image )
-			{
-				texture2.image = image;
-				texture2.needsUpdate = true;
-	
-				//lineas para texturas pequeñas y bajos polígonos
-				//texture.magFilter = THREE.NearestFilter;
-				//texture.minFilter = THREE.NearestMipMapLinearFilter;
-			});
-			loader.load( 'models/al.obj', function ( event )
-			{
-				obj = event;
-				obj.traverse ( function ( child )
-				{
-					if(child instanceof THREE.Mesh)
-					{
-						child.material.map = texture2;
-					}
-				} );
-				obj.position.y -= 3;
-				scene.add( obj );
-			});
-*/
-////////////////////////////// FIN PRUEBAS //////////////////
 			/// FIN DE CARGA DEL OBJ ///
+		
 		//Ponemos el renderer al tamaño de la ventana y le 
 		//incluímos un CANVAS al HTML
 		renderer = new THREE.WebGLRenderer( {});
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		canvas.appendChild( renderer.domElement );
+		
+
 	}
+	
 	/// BUCLE DE RENDERIZACIÓN ///
 	function animate()
 	{
@@ -158,6 +137,8 @@
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque 
 		//son activados durante la visualización del modelado.
+		
+		window.addEventListener( 'resize', onWindowResize, false );
 
 		render();
 	}
