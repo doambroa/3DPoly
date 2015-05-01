@@ -41,7 +41,7 @@
 	
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
-		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 1000);
+		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 100000);
 		camera.position.z = 5;
 		//Comportamiento y sensibilidad de la cámara
 		controls = new THREE.TrackballControls( camera );
@@ -107,7 +107,7 @@
 
 	function onWindowResize() 
 	{
-	    camera.aspect = aspectRatio;
+	    camera.aspect = window.innerWidth / window.innerHeight; //no puede ser aspectRatio porque se tiene que recalcular en cada llamada
     	camera.updateProjectionMatrix();
 
     	renderer.setSize(window.innerWidth, window.innerHeight);
