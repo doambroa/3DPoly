@@ -13,7 +13,8 @@
 	</style>
 	
 	<script src="js/three.min.js"></script>
-	<script src="js/TrackballControls.js"></script>
+	<!--<script src="js/TrackballControls.js"></script>-->
+	<script src="js/OrbitControls.js"></script>
 	<script src="js/MTLLoader.js"></script>
 	<script src="js/OBJMTLLoader.js"></script>
 	<!--<script src="js/Detector.js"></script>-->
@@ -42,17 +43,23 @@
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
 		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 100000);
-		camera.position.z = 5;
+		camera.position.z = 550	;
+
+		renderer = new THREE.WebGLRenderer( {});
+
 		//Comportamiento y sensibilidad de la cámara
-		controls = new THREE.TrackballControls( camera );
+		controls = new THREE.OrbitControls( camera, document, renderer.domElement );
 		
-		controls.rotateSpeed = 5.0;
-		controls.zoomSpeed = 2.0;
-		controls.panSpeed = 0.5;
+		controls.rotateSpeed = 1.0;
+		controls.zoomSpeed = 1.0;
+		controls.panSpeed = 1; //no funciona
 		controls.noZoom = false;
 		controls.noPan = false;
-		controls.staticMoving = false; //el zoom queda mas fluído a false y con el zoomspeed puedo ajustarlo para que sea más visual y no se escape
-		controls.dynamicDampingFactor = 0.2; //QUE ES ESTO???
+		controls.staticMoving = false; //con el cambio a Orbitcontrols la fluidez se pierde indiferentemente de este valor
+		controls.dynamicDampingFactor = 0.3; //QUE ES ESTO??
+
+
+
 		// Creamos la escena para añadirle los elementos
 		scene = new THREE.Scene();
 		ambient = new THREE.AmbientLight(0xFFFFFA); //casi negra
@@ -61,26 +68,38 @@
   		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
   		 directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
   		 scene.add( directionalLight );
+
   		 scene.add( camera );
+
 
 
   		//Carga de Modelo
 				var loader = new THREE.OBJMTLLoader();
-				loader.load( 'models/b.obj', 'textures/b.mtl', function ( object ) {
-					object.position.y = - 80;
+				loader.load( 'models/b.obj', 'textures/b.mtl', function ( object ){
+					
+					
+					object.position.set(0,0,0);
+					object.position.y = -80;
+					object.name('edificio');
+					scene.add(object);
 
-					scene.add( object );
-				});
+});
+				
 			/// FIN DE CARGA DEL OBJ ///
+
+
+			
+		//Ponemos el renderer al tamaño de la ventana y lo incluimos en el HTML
 		
-		//Ponemos el renderer al tamaño de la ventana y le 
-		//incluímos un CANVAS al HTML
-		renderer = new THREE.WebGLRenderer( {});
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		canvas.appendChild( renderer.domElement );
+
+		window.addEventListener( 'resize', onWindowResize, false );
+
 	
 	}
-	
+
+
 	/// BUCLE DE RENDERIZACIÓN ///
 	function animate()
 	{
@@ -90,18 +109,16 @@
 		//Además si el usuario cambia de pestaña, la función se detiene, con lo que ahorra
 		//batería y procesamiento.
 		requestAnimationFrame( animate );
-		//en cada fotograma necesitamos calcular la nueva posición de la cámara
-		//y ponerla a mirar al centro de la escena
+
 		controls.update();
 		
-		//camera.lookAt(scene.position); si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
+		//camera.lookAt(scene.position); //si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
 		
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque 
 		//son activados durante la visualización del modelado.
 
-		window.addEventListener( 'resize', onWindowResize, false );
-
+		
 		render();
 	}
 
