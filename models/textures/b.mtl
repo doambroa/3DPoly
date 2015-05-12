@@ -228,8 +228,8 @@ newmtl 09___Default
 	#editadas estas dos lineas, estaban a 0.0000 y los valores de reflectancia no iban bien
 	Ks 1.0000 1.0000 1.0000
 	Ke 1.0000 1.0000 1.0000
-	map_Ka C:\Users\Dani\Desktop\PROYECTO\UniServerZ\www\pruebas\textures\BARK5.jpg
-	map_Kd C:\Users\Dani\Desktop\PROYECTO\UniServerZ\www\pruebas\textures\BARK5.jpg
+	map_Ka /textures/BARK5.jpg
+	map_Kd /textures/BARK5.jpg
 
 newmtl wire_228184153
 	Ns 32

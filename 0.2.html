@@ -13,9 +13,7 @@
 	</style>
 	
 	<script src="js/three.min.js"></script>
-	<!--<script src="js/TrackballControls.js"></script>-->
-	<script src="js/OrbitControls.js"></script>
-	<script src="js/ImageUtils.js"></script>
+	<script src="js/TrackballControls.js"></script>
 	<script src="js/MTLLoader.js"></script>
 	<script src="js/OBJMTLLoader.js"></script>
 	<!--<script src="js/Detector.js"></script>-->
@@ -34,6 +32,9 @@
 	var aspectRatio = window.innerWidth / window.innerHeight;
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
+
+	var TECLA = { AVPAG:false, REPAG:false, ARRIBA:false, ABAJO:false, IZQUIERDA:false, DERECHA:false, F:false };
+
 	//INICIALIZACIÓN
 	function init()
 	{
@@ -44,23 +45,17 @@
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
 		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 100000);
-		camera.position.z = 550	;
-
-		renderer = new THREE.WebGLRenderer({});
-
+		camera.position.z = 5;
 		//Comportamiento y sensibilidad de la cámara
-		controls = new THREE.OrbitControls( camera, document, renderer.domElement );
+		controls = new THREE.TrackballControls( camera );
 		
-		controls.rotateSpeed = 1.0;
-		controls.zoomSpeed = 1.0;
-		controls.panSpeed = 1; //no funciona
+		controls.rotateSpeed = 5.0;
+		controls.zoomSpeed = 2.0;
+		controls.panSpeed = 0.5;
 		controls.noZoom = false;
 		controls.noPan = false;
-		controls.staticMoving = false; //con el cambio a Orbitcontrols la fluidez se pierde indiferentemente de este valor
-		controls.dynamicDampingFactor = 0.3;
-
-
-
+		controls.staticMoving = false; //el zoom queda mas fluído a false y con el zoomspeed puedo ajustarlo para que sea más visual y no se escape
+		controls.dynamicDampingFactor = 0.2; //QUE ES ESTO???
 		// Creamos la escena para añadirle los elementos
 		scene = new THREE.Scene();
 		ambient = new THREE.AmbientLight(0xFFFFFA); //casi negra
@@ -69,40 +64,27 @@
   		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
   		 directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
   		 scene.add( directionalLight );
-
   		 scene.add( camera );
-
-  		 THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen (no corrige 403)
 
 
   		//Carga de Modelo
 				var loader = new THREE.OBJMTLLoader();
-				loader.load( 'models/b.obj', 'models/textures/b.mtl', function ( object ){
-					
-					
-					object.position.set(0,0,0);
-					object.position.y = -80;
-					object.name = 'edificio';
+				loader.load( 'models/b.obj', 'textures/b.mtl', function ( object ) {
+					object.position.y = - 80;
 
-					scene.add(object);
-
-});
-				
+					scene.add( object );
+				});
 			/// FIN DE CARGA DEL OBJ ///
-
-
-			
-		//Ponemos el renderer al tamaño de la ventana y lo incluimos en el HTML
 		
+		//Ponemos el renderer al tamaño de la ventana y le 
+		//incluímos un CANVAS al HTML
+		renderer = new THREE.WebGLRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setClearColor(0x005500, 1);	//verde para
 		canvas.appendChild( renderer.domElement );
-
-		window.addEventListener( 'resize', onWindowResize, false );
-
 	
 	}
-
-
+	
 	/// BUCLE DE RENDERIZACIÓN ///
 	function animate()
 	{
@@ -112,16 +94,20 @@
 		//Además si el usuario cambia de pestaña, la función se detiene, con lo que ahorra
 		//batería y procesamiento.
 		requestAnimationFrame( animate );
-
+		//en cada fotograma necesitamos calcular la nueva posición de la cámara
+		//y ponerla a mirar al centro de la escena
 		controls.update();
 		
-		//camera.lookAt(scene.position); //si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
+		//camera.lookAt(scene.position); si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
 		
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque 
 		//son activados durante la visualización del modelado.
 
-		
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.onkeydown=teclaPulsada;
+   		document.onkeyup=teclaSoltada;
+
 		render();
 	}
 
@@ -141,10 +127,62 @@
 		renderer.render(scene, camera);
 	}
 
+	function teclaPulsada(e)
+{
+    switch (e.keyCode)
+    {
+        case 33: //Av página
+            TECLA.AVPAG=true;
+            break;
+        case 34: // Re página
+            TECLA.REPAG=true;
+            break;
+        case 37: // Izquierda
+            TECLA.IZQUIERDA=true;
+            break;
+        case 39: // Derecha
+            TECLA.DERECHA=true;
+            break;
+        case 38: // Arriba
+            TECLA.ARRIBA=true;
+            break;
+        case 40: // Abajo
+            TECLA.ABAJO=true;
+            break;
+    }
+
+}
+function teclaSoltada(e)
+{
+    switch (e.keyCode)
+    {
+        case 33: //Av página
+            TECLA.AVPAG=false;
+            break;
+        case 34: // Re página
+            TECLA.REPAG=false;
+            break;
+        case 37: // Izquierda
+            TECLA.IZQUIERDA=false;
+            break;
+        case 39: // Derecha
+            TECLA.DERECHA=false;
+            break;
+        case 38: // Arriba
+            TECLA.ARRIBA=false;
+            break;
+        case 40: // Abajo
+            TECLA.ABAJO=false;
+            break;
+        case 70: // F
+            TECLA.F=true;
+            break;
+    }
+}
+
 
 init();
 animate();
-
 </script>
 
 </body>
