@@ -18,6 +18,8 @@
 	<script src="js/ImageUtils.js"></script>
 	<script src="js/MTLLoader.js"></script>
 	<script src="js/OBJMTLLoader.js"></script>
+	<script src="js/dat.gui.js"></script>
+
 	<!--<script src="js/Detector.js"></script>-->
 </head>
 
@@ -34,12 +36,45 @@
 	var aspectRatio = window.innerWidth / window.innerHeight;
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
+
+
+
+
 	//INICIALIZACIÓN
 	function init()
 	{
 		//div para el elemento canvas de la escena
 		canvas = document.createElement('div');
 		document.body.appendChild( canvas );
+
+
+	var CuadroMenu = function() {
+	  this.mensaje = 'Prueba Menú';
+	  this.velocidadRotación = 0.8;
+	  this.Despachos = false;
+	  this.Aulas_de_teoría = false;
+	  this.Aseos = false;
+	  this.Evacuación = false;
+	  this.Color = 0x00ffff;;
+
+	};
+
+	window.onload = function() {
+	  var text = new CuadroMenu();
+	  var gui = new dat.GUI();
+	  gui.add(text, 'mensaje');
+	  gui.add(text, 'velocidadRotación', -5, 5);
+	  gui.add(text, 'Despachos');
+	  gui.add(text, 'Aseos')
+	  gui.add(text, 'Evacuación')
+	  gui.add(text, 'Aulas_de_teoría');
+	  gui.add(text, 'Color');
+
+
+
+
+	};
+
 	
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
@@ -90,6 +125,7 @@
 				
 			/// FIN DE CARGA DEL OBJ ///
 
+			//Al tener tantas texturas distintas creo que MTL es lo idóneo, pero quizá me interese cambiarlo a la laga por algo del estilo zmesh = new THREE.Mesh( geometry,new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(tmap)})); Usando imageUtils.
 
 			
 		//Ponemos el renderer al tamaño de la ventana y lo incluimos en el HTML
@@ -118,8 +154,7 @@
 		//camera.lookAt(scene.position); //si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
 		
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
-		//llamadas a las funciones de los filtros porque 
-		//son activados durante la visualización del modelado.
+		//llamadas a las funciones de los filtros porque son activados durante la visualización del modelado.
 
 		
 		render();
