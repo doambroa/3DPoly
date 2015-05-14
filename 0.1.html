@@ -36,9 +36,17 @@
 	var aspectRatio = window.innerWidth / window.innerHeight;
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
+	var CuadroMenu = function() {
+	  this.mensaje = 'Prueba Menú';
+	  this.Tamaño = 0.8;
+	  this.Despachos = false;
+	  this.Aulas_de_teoría = false;
+	  this.Aseos = false;
+	  this.Evacuación = false;
+	  this.color = "#ffd100";
+	  this.VelocidadRotacion = 1;
 
-
-
+	};
 
 	//INICIALIZACIÓN
 	function init()
@@ -48,32 +56,37 @@
 		document.body.appendChild( canvas );
 
 
-	var CuadroMenu = function() {
-	  this.mensaje = 'Prueba Menú';
-	  this.velocidadRotación = 0.8;
-	  this.Despachos = false;
-	  this.Aulas_de_teoría = false;
-	  this.Aseos = false;
-	  this.Evacuación = false;
-	  this.Color = 0x00ffff;;
 
-	};
 
 	window.onload = function() {
 	  var text = new CuadroMenu();
 	  var gui = new dat.GUI();
+
+	  //estructura de carpetas del menú
+
+	var f1 = gui.addFolder('Planta 1');
+	//f1.open();
+
+	var f2 = gui.addFolder('Planta 2');
+	f2.add(text, 'VelocidadRotacion', -10, 10)
+	f2.add(text, 'Despachos');
+	f2.add(text, 'Evacuación');
+	f2.add(text, 'Aulas_de_teoría');
+	f2.open();
+/*
+	 this.color0 = "#ffae23"; // string de CSS
+	  this.color1 = [ 0, 128, 255 ]; //  array RGB
+	  this.color2 = [ 0, 128, 255, 0.3 ]; // RGB con alpha añadido
+	  this.color3 = { h: 350, s: 0.9, v: 0.3 }; // Hue, saturatción, valor
+*/
+
 	  gui.add(text, 'mensaje');
-	  gui.add(text, 'velocidadRotación', -5, 5);
-	  gui.add(text, 'Despachos');
-	  gui.add(text, 'Aseos')
-	  gui.add(text, 'Evacuación')
-	  gui.add(text, 'Aulas_de_teoría');
-	  gui.add(text, 'Color');
-
-
-
-
+	  f1.add(text, 'Tamaño', -5, 5);
+	  f2.add(text, 'Despachos');
+	  f1.add(text, 'Aseos')
+	  gui.addColor(text, 'color')
 	};
+	
 
 	
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
