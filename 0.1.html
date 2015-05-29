@@ -25,6 +25,7 @@
 
 <body>
 <script>
+
 	var canvas; //antes le llamaba container porque contenía la escena
 	var camera;
 	var controls;
@@ -44,7 +45,7 @@
 	  this.Aseos = false;
 	  this.Evacuación = false;
 	  this.color = "#ffd100";
-	  this.VelocidadRotacion = 1;
+	  this.Transparencia = 0;
 
 	};
 
@@ -58,7 +59,7 @@
 
 
 
-	window.onload = function() {
+	
 	  var text = new CuadroMenu();
 	  var gui = new dat.GUI();
 
@@ -68,7 +69,7 @@
 	//f1.open();
 
 	var f2 = gui.addFolder('Planta 2');
-	f2.add(text, 'VelocidadRotacion', -10, 10)
+	f2.add(text, 'Transparencia', 0, 100)
 	f2.add(text, 'Despachos');
 	f2.add(text, 'Evacuación');
 	f2.add(text, 'Aulas_de_teoría');
@@ -85,7 +86,7 @@
 	  f2.add(text, 'Despachos');
 	  f1.add(text, 'Aseos')
 	  gui.addColor(text, 'color')
-	};
+	
 	
 
 	
@@ -95,6 +96,7 @@
 		camera.position.z = 550	;
 
 		renderer = new THREE.WebGLRenderer({});
+
 
 		//Comportamiento y sensibilidad de la cámara
 		controls = new THREE.OrbitControls( camera, document, renderer.domElement );
@@ -111,7 +113,7 @@
 
 		// Creamos la escena para añadirle los elementos
 		scene = new THREE.Scene();
-		ambient = new THREE.AmbientLight(0xFFFFFA); //casi negra
+		ambient = new THREE.AmbientLight(0xfffffa); //luz casi negra, para que todo lo que no sea material.
 		scene.add( ambient ); //añadimos la luz de ambiente a la escena
 		  // Luz direccional simple, para ver los sombreados.
   		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
@@ -120,25 +122,37 @@
 
   		 scene.add( camera );
 
-  		 THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen (no corrige 403)
+  		 THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
 
+  			/// Carga de Modelo ///
 
-  		//Carga de Modelo
 				var loader = new THREE.OBJMTLLoader();
-				loader.load( 'models/b.obj', 'models/textures/b.mtl', function ( object ){
+				loader.load( 'models/c.obj', 'models/textures/c.mtl', function ( object ){
 					
 					
 					object.position.set(0,0,0);
 					object.position.y = -80;
 					object.name = 'edificio';
 
+					///PRUEBA TRANSPARENCIA////////////////*
+	/*
+
+					object.traverse( function( node ) {
+    					
+    					if( node.material ) {
+        					node.material.opacity = 0.5;
+        					node.material.transparent = true;
+    					}
+} )*/
 					scene.add(object);
 
 });
-				
+
+
+	
 			/// FIN DE CARGA DEL OBJ ///
 
-			//Al tener tantas texturas distintas creo que MTL es lo idóneo, pero quizá me interese cambiarlo a la laga por algo del estilo zmesh = new THREE.Mesh( geometry,new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(tmap)})); Usando imageUtils.
+			//Al tener tantas texturas distintas creo que MTL es lo idóneo, pero quizá me interese cambiarlo a la larga por algo del estilo zmesh = new THREE.Mesh( geometry,new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(tmap)})); Usando imageUtils.
 
 			
 		//Ponemos el renderer al tamaño de la ventana y lo incluimos en el HTML
@@ -182,14 +196,22 @@
 
     	// no me hace falta controls.handleResize();
     	render();
-}
+	}
 
 	function render()
 	{
 		renderer.render(scene, camera);
 	}
+/*
+	function transpa(){
 
+			var edificio = scene.getObjectByName('edificio');
 
+			edificio.material.opacity=0.5;
+			edificio.material.transparent = true;
+	} 
+
+*/
 init();
 animate();
 
