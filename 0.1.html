@@ -35,19 +35,45 @@
 	var mouseY = 0;
 	var ambient; //luz de ambiente
 	var aspectRatio = window.innerWidth / window.innerHeight;
+
+	var contenido;
+
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
-	var CuadroMenu = function() {
-	  this.mensaje = 'Prueba Menú';
-	  this.Tamaño = 0.8;
-	  this.Despachos = false;
-	  this.Aulas_de_teoría = false;
-	  this.Aseos = false;
-	  this.Evacuación = false;
-	  this.color = "#ffd100";
-	  this.Transparencia = 0;
+	
+	//Configuramos el menú de filtradoq
 
+var opcionesMenu = function() {
+		this.Mensaje = 'Menú de opciones';
+		this.Tamaño = 0;
+		this.Despachos = false;
+		this.Aulas_de_teoría = false;
+		this.Aseos = false;
+		this.Contramedidas = false;
+		this.Evacuación = false;
+		this.color = "#ffd100";
+		this.Opacidad = 1;
+		this.Seminarios = false;
+		this.Laboratorios_de_Prácticas = false;
+		this.Secretaría = false;
+		this.Cafetería = false;
+		this.Conserjería = false;
+		this.Aula_Magna = false;
+		this.Salón_de_Actos = false;
+		this.Salón_de_Grados = false;
+		this.Sala_de_Lectura = false;
+		this.Salas_de_Ordenadores = false;
+		this.Garaje = false;
+		this.Enrutado = false;
+		this.Almacén = false;
+		this.Infraestructura_Becarios = false;
+		this.Aula_de_Libre_Acceso = false;
+		this.ESEIDA_Delegación_de_Alumnos = false;
+	
 	};
+
+	var opciones = new opcionesMenu();
+	setMenu();
 
 	//INICIALIZACIÓN
 	function init()
@@ -55,51 +81,17 @@
 		//div para el elemento canvas de la escena
 		canvas = document.createElement('div');
 		document.body.appendChild( canvas );
-
-
-
-
-	
-	  var text = new CuadroMenu();
-	  var gui = new dat.GUI();
-
-	  //estructura de carpetas del menú
-
-	var f1 = gui.addFolder('Planta 1');
-	//f1.open();
-
-	var f2 = gui.addFolder('Planta 2');
-	f2.add(text, 'Transparencia', 0, 100)
-	f2.add(text, 'Despachos');
-	f2.add(text, 'Evacuación');
-	f2.add(text, 'Aulas_de_teoría');
-	f2.open();
-/*
-	 this.color0 = "#ffae23"; // string de CSS
-	  this.color1 = [ 0, 128, 255 ]; //  array RGB
-	  this.color2 = [ 0, 128, 255, 0.3 ]; // RGB con alpha añadido
-	  this.color3 = { h: 350, s: 0.9, v: 0.3 }; // Hue, saturatción, valor
-*/
-
-	  gui.add(text, 'mensaje');
-	  f1.add(text, 'Tamaño', -5, 5);
-	  f2.add(text, 'Despachos');
-	  f1.add(text, 'Aseos')
-	  gui.addColor(text, 'color')
-	
-	
-
-	
+		
+		
 		//Ajustamos la distancia de la cámara, nuestro campo de visión
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
 		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 100000);
 		camera.position.z = 550	;
-
 		renderer = new THREE.WebGLRenderer({});
 
 
 		//Comportamiento y sensibilidad de la cámara
-		controls = new THREE.OrbitControls( camera, document, renderer.domElement );
+		controls = new THREE.OrbitControls( camera, renderer.domElement );
 		
 		controls.rotateSpeed = 1.0;
 		controls.zoomSpeed = 1.0;
@@ -122,34 +114,44 @@
 
   		 scene.add( camera );
 
-  		 THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
+  		// THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
+
 
   			/// Carga de Modelo ///
 
+  				
 				var loader = new THREE.OBJMTLLoader();
 				loader.load( 'models/c.obj', 'models/textures/c.mtl', function ( object ){
-					
-					
-					object.position.set(0,0,0);
-					object.position.y = -80;
-					object.name = 'edificio';
 
-					///PRUEBA TRANSPARENCIA////////////////*
-	/*
+					contenido = object;
 
-					object.traverse( function( node ) {
-    					
-    					if( node.material ) {
-        					node.material.opacity = 0.5;
-        					node.material.transparent = true;
-    					}
-} )*/
-					scene.add(object);
+					contenido.position.set(0,0,0);
+					contenido.position.y = -80;
+					contenido.name = 'edificio';
+						/*	
+			loader.addEventListener( 'load', function( event ) {
+				var mainMesh = event.content.children[0].children[0];
+
+					///PRUEBA TRANSPARENCIA CON TRAVERSE////////////////*
+				//	object.traverse( function( node ) {
+    				
+    					//if( node.material ) {
+        					//node.material.opacity = 0.5;
+        					//node.material.transparent = true;
+    					//}
+					//})
+			
+
+					scene.add(objeto);
+				});
+		*/
+					scene.add(contenido);
+
+					return contenido;
+					
 
 });
 
-
-	
 			/// FIN DE CARGA DEL OBJ ///
 
 			//Al tener tantas texturas distintas creo que MTL es lo idóneo, pero quizá me interese cambiarlo a la larga por algo del estilo zmesh = new THREE.Mesh( geometry,new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(tmap)})); Usando imageUtils.
@@ -177,12 +179,27 @@
 		requestAnimationFrame( animate );
 
 		controls.update();
+
+		if(contenido != undefined){
+
+			//console.log(contenido);
+			contenido.traverse( function( object ) {
+    					
+    					if( object.material ) {
+
+        					object.material.opacity = opciones.Opacidad;
+        					object.material.transparent = true;
+    					}
+    		})
+			
+		}
 		
 		//camera.lookAt(scene.position); //si lo dejase activado la camara miraría todo el rato a la escena y se hace un lío sin dejarme hacer correctamente el Pan. Una vez quitado el Pan ya va mas o menos bien.
 		
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque son activados durante la visualización del modelado.
-
+		
+		//object.material.opacity = opciones.Transparencia;
 		
 		render();
 	}
@@ -201,6 +218,89 @@
 	function render()
 	{
 		renderer.render(scene, camera);
+	}
+	
+	function setMenu(){
+
+		var gui = new dat.GUI();
+
+	  //estructura de carpetas del menú
+	  
+		var s2 = gui.addFolder('Sótano 2');
+			s2.add(opciones, 'Garaje');
+			s2.add(opciones, 'Enrutado');
+		
+			//s2.open();
+		var s1 = gui.addFolder('Sótano 1');
+			s1.add(opciones, 'Salón_de_Actos');
+			s1.add(opciones, 'Salas_de_Ordenadores');
+			s1.add(opciones, 'Aula_de_Libre_Acceso');
+			s1.add(opciones, 'Infraestructura_Becarios');
+			s1.add(opciones, 'Almacén');
+			s1.add(opciones, 'Contramedidas');
+			s1.add(opciones, 'Evacuación')
+			
+			//s1.open();
+			
+
+		var f0 = gui.addFolder('Planta 0');
+			f0.add(opciones, 'Aula_Magna');
+			f0.add(opciones, 'Aulas_de_teoría');
+			f0.add(opciones, 'Cafetería');
+			f0.add(opciones, 'Conserjería');
+			f0.add(opciones, 'Secretaría');
+			f0.add(opciones, 'Aseos');
+			f0.add(opciones, 'Sala_de_Lectura');
+			f0.add(opciones, 'Salón_de_Grados');
+			f0.add(opciones, 'Contramedidas');
+			f0.add(opciones, 'Evacuación');
+			
+			//f0.open();
+		
+		var f1 = gui.addFolder('Planta 1 (Alimentos)');
+			f1.add(opciones, 'Tamaño', -5, 5); //deprecated, entorno de pruebas
+			f1.add(opciones, 'Aulas_de_teoría');
+			f1.add(opciones, 'ESEIDA_Delegación_de_Alumnos');
+			f1.add(opciones, 'Aseos');		
+			f1.add(opciones, 'Contramedidas');
+			f1.add(opciones, 'Evacuación');
+		
+		//f1.open();
+		
+		var f2 = gui.addFolder('Planta 2 (Informática)');
+			f2.add(opciones, 'Opacidad', 0, 1)
+			f2.add(opciones, 'Despachos');
+			f2.add(opciones, 'Aulas_de_teoría');
+			f2.add(opciones, 'Seminarios');
+			f2.add(opciones, 'Contramedidas');
+			f2.add(opciones, 'Evacuación');
+		
+		f2.open();
+		
+		var f3 = gui.addFolder('Planta 3');
+			f3.add(opciones, 'Aulas_de_teoría');
+			f3.add(opciones, 'Despachos');
+			f3.add(opciones, 'Seminarios');
+			f3.add(opciones, 'Laboratorios_de_Prácticas');
+			f3.add(opciones, 'Aseos');
+			f3.add(opciones, 'Contramedidas');
+			f3.add(opciones, 'Evacuación');
+			
+			//f3.open();
+			
+		var f4 = gui.addFolder('planta 4');
+			f4.add(opciones, 'Despachos');
+			f4.add(opciones, 'Laboratorios_de_Prácticas');
+	/*
+		 this.color0 = "#ffae23"; // string de CSS
+		  this.color1 = [ 0, 128, 255 ]; //  array RGB
+		  this.color2 = [ 0, 128, 255, 0.3 ]; // RGB con alpha añadido
+		  this.color3 = { h: 350, s: 0.9, v: 0.3 }; // Hue, saturatción, valor
+	*/
+		  gui.add(opciones, 'Mensaje');
+		  gui.add(opciones, 'Opacidad', 0, 1);
+		  gui.addColor(opciones, 'color')
+
 	}
 /*
 	function transpa(){
