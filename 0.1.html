@@ -41,7 +41,7 @@
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
 	
-	//Configuramos el menú de filtradoq
+	//Configuramos el menú de filtrado
 
 var opcionesMenu = function() {
 		this.Mensaje = 'Menú de opciones';
@@ -52,7 +52,7 @@ var opcionesMenu = function() {
 		this.Contramedidas = false;
 		this.Evacuación = false;
 		this.color = "#ffd100";
-		this.Opacidad = 1;
+		this.Opacidad = 0.99;
 		this.Seminarios = false;
 		this.Laboratorios_de_Prácticas = false;
 		this.Secretaría = false;
@@ -105,14 +105,16 @@ var opcionesMenu = function() {
 
 		// Creamos la escena para añadirle los elementos
 		scene = new THREE.Scene();
-		ambient = new THREE.AmbientLight(0xfffffa); //luz casi negra, para que todo lo que no sea material.
+		
+		ambient = new THREE.AmbientLight(0xfffffa); //luz casi negra, para que todo lo que no sea material brille mucho.
 		scene.add( ambient ); //añadimos la luz de ambiente a la escena
 		  // Luz direccional simple, para ver los sombreados.
   		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-  		 directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
-  		 scene.add( directionalLight );
+  		directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
+  		
+  		scene.add( directionalLight );
 
-  		 scene.add( camera );
+  		scene.add( camera );
 
   		// THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
 
@@ -151,8 +153,10 @@ var opcionesMenu = function() {
 					
 
 });
-
 			/// FIN DE CARGA DEL OBJ ///
+
+			//console.log(scene.getObjectByName('edificio', true));
+			//Aún utilizando getObjectByName el obejto es undefined para el ámbito de esta función. Al bucle de animación a esperar su carga.
 
 			//Al tener tantas texturas distintas creo que MTL es lo idóneo, pero quizá me interese cambiarlo a la larga por algo del estilo zmesh = new THREE.Mesh( geometry,new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(tmap)})); Usando imageUtils.
 
@@ -183,12 +187,13 @@ var opcionesMenu = function() {
 		if(contenido != undefined){
 
 			//console.log(contenido);
+
 			contenido.traverse( function( object ) {
     					
     					if( object.material ) {
 
         					object.material.opacity = opciones.Opacidad;
-        					object.material.transparent = true;
+        					object.material.transparent = 	true;
     					}
     		})
 			
