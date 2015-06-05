@@ -20,10 +20,36 @@
 	<script src="js/OBJMTLLoader.js"></script>
 	<script src="js/dat.gui.js"></script>
 
+<!--Imports de botón y ventana de información de ayuda con jQuery-->
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<link rel=stylesheet href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+	<link rel=stylesheet href="css/info.css"/>
+	<script src="js/info.js"></script> <!-- se carga después de lso jQuery--!>
+
 	<!--<script src="js/Detector.js"></script>-->
+
+
 </head>
 
 <body>
+
+<!--Para mostrar el botón de información y la ventana cuando es clicado. -->
+<div id="infoButton"></div>
+<div id="infoBox" title="Información de ayuda">
+- Para rotar el modelo sobre la escena utilizar el botón izquierdo del ratón. </p>
+- El botón derecho del ratón o las flechas direccionales mueven la cámara:</p>
+	- Arriba mueve la cámara hacia arriba.</br>
+	- abajo hacia abajo </br>
+	- izquierda</br>
+	- derecha</p>
+
+- Se puede hacer zoom con la rueda o el botón central del ratón.</p>
+
+- El menú es desplegable por pisos, seleccionar el piso con el que se quiere interactuar y marcar/desmarcar los cuadrados según lo buscado.</p>
+- Las barras de opacidad permiten jugar con la transparencia de las paredes del edificio.
+
+</div>
 <script>
 
 	var canvas; //antes le llamaba container porque contenía la escena
