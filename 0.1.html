@@ -143,42 +143,55 @@ var opcionesMenu = function() {
   		scene.add( camera );
 
   		// THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
-
-
+				
   			/// Carga de Modelo ///
 
-  				
-				var loader = new THREE.OBJMTLLoader();
-				loader.load( 'models/c.obj', 'models/textures/c.mtl', function ( object ){
+  			//Identada para facilitar su ubicación
 
-					contenido = object;
+			var loader = new THREE.OBJMTLLoader();
+			loader.load( 'models/c.obj', 'models/textures/c.mtl', 
+						
+				//onProgress()
+				function ( object ){
 
-					contenido.position.set(0,0,0);
-					contenido.position.y = -80;
-					contenido.name = 'edificio';
-						/*	
-			loader.addEventListener( 'load', function( event ) {
-				var mainMesh = event.content.children[0].children[0];
-
-					///PRUEBA TRANSPARENCIA CON TRAVERSE////////////////*
-				//	object.traverse( function( node ) {
-    				
-    					//if( node.material ) {
-        					//node.material.opacity = 0.5;
-        					//node.material.transparent = true;
-    					//}
-					//})
-			
-
-					scene.add(objeto);
-				});
-		*/
-					scene.add(contenido);
-
-					return contenido;
+				contenido = object;
+				contenido.position.set(0,0,0);
+				contenido.position.y = -80;
+				contenido.name = 'edificio';
 					
+							/*	
+				loader.addEventListener( 'load', function( event ) {
+					var mainMesh = event.content.children[0].children[0];
 
-});
+						///PRUEBA TRANSPARENCIA CON TRAVERSE////////////////*
+					//	object.traverse( function( node ) {
+	    				
+	    					//if( node.material ) {
+	        					//node.material.opacity = 0.5;
+	        					//node.material.transparent = true;
+	    					//}
+						//})
+				
+
+						scene.add(objeto);
+					});
+			*/
+				scene.add(contenido);
+
+				return contenido;
+
+				},
+				// onLoad()
+				function ( xhr ) {
+					//console.log( ('Elemento ' + xhr.loaded) + ' Cargado.' );
+					console.log( (xhr.loaded / xhr.total * 100) + '% Cargado.' );
+					
+				},
+				// onError()
+				function ( xhr ) {
+					console.log( 'Ha ocurrido un error durante la carga. Pulse F5 o reinicie el navegador para volver a intentarlo.' );
+				}
+			);
 			/// FIN DE CARGA DEL OBJ ///
 
 			//console.log(scene.getObjectByName('edificio', true));
