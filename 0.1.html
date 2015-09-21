@@ -3,9 +3,11 @@
 <html>
 
 <head>
+
 	<meta charset="utf-8">
 
-	<title>Visualizador WebGL de OBJ usando Three.js</title>
+	<title>3DPoly, Visualizador WebGL del edificio plitécnico</title>
+	<meta property="og:title" content="3DPoly">
 
 	<style>
 			body { margin: 0; }
@@ -13,43 +15,47 @@
 	</style>
 	
 	<script src="js/three.min.js"></script>
-	<!--<script src="js/TrackballControls.js"></script>-->
+	
+	<script src="js/Detector.js"></script>
 	<script src="js/OrbitControls.js"></script>
 	<script src="js/ImageUtils.js"></script>
 	<script src="js/MTLLoader.js"></script>
 	<script src="js/OBJMTLLoader.js"></script>
 	<script src="js/dat.gui.js"></script>
 
+
+
 <!--Imports de botón y ventana de información de ayuda con jQuery-->
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 	<link rel=stylesheet href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
 	<link rel=stylesheet href="css/info.css"/>
-	<script src="js/info.js"></script> <!-- se carga después de lso jQuery--!>
-
-	<!--<script src="js/Detector.js"></script>-->
-
-
-</head>
-
-<body>
+	<script src="js/info.js"></script> <!-- se carga después de los jQuery--> 
+ 
+</head> 
+ 
+<body> 
 
 <!--Para mostrar el botón de información y la ventana cuando es clicado. -->
 <div id="infoButton"></div>
 <div id="infoBox" title="Información de ayuda">
-- Para rotar el modelo sobre la escena utilizar el botón izquierdo del ratón. </p>
-- El botón derecho del ratón o las flechas direccionales mueven la cámara:</p>
-	- Arriba mueve la cámara hacia arriba.</br>
-	- abajo hacia abajo </br>
-	- izquierda</br>
-	- derecha</p>
+	- Para rotar el modelo sobre la escena utilizar el botón izquierdo del ratón. </p>
+	- El botón derecho del ratón o las flechas direccionales mueven la cámara:</p>
+		- Arriba mueve la cámara hacia arriba.</br>
+		- abajo hacia abajo </br>
+		- izquierda</br>
+		- derecha</p>
 
-- Se puede hacer zoom con la rueda o el botón central del ratón.</p>
+	- Se puede hacer zoom con la rueda o el botón central del ratón.</p>
 
-- El menú es desplegable por pisos, seleccionar el piso con el que se quiere interactuar y marcar/desmarcar los cuadrados según lo buscado.</p>
-- Las barras de opacidad permiten jugar con la transparencia de las paredes del edificio.
+	- El menú es desplegable por pisos, seleccionar el piso con el que se quiere interactuar y marcar/desmarcar los cuadrados según lo buscado.</p>
+	- Las barras de opacidad permiten jugar con la transparencia de las paredes del edificio.<p>
+
+	- Presione la tecla H para ocultar o mostrar el menú de plantas.
 
 </div>
+
+
 <script>
 
 	var canvas; //antes le llamaba container porque contenía la escena
@@ -57,12 +63,20 @@
 	var controls;
 	var scene;
 	var renderer;
-	var mouseX = 0;
-	var mouseY = 0;
+	//var mouseX = 0;
+	//var mouseY = 0; DEPRECATED
 	var ambient; //luz de ambiente
 	var aspectRatio = window.innerWidth / window.innerHeight;
 
 	var contenido;
+
+	if ( Detector.webgl ){
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	}
+	else{
+		console.log('ERROR, su dispositivo no es compatible con WebGL');
+		//renderer = new THREE.CanvasRenderer(); Posible ampliación 
+	}
 
 	//posible niebla para la fachada
 	//var niebla = new THREE.Fog(0xCCFFCC, 1, 1000);
@@ -113,7 +127,6 @@ var opcionesMenu = function() {
 		// THREE.PerspectiveCamera(ÁnguloDeVisión, AspectRatio, cercano, lejano)
 		camera = new THREE.PerspectiveCamera(45	, aspectRatio, 1, 100000);
 		camera.position.z = 550	;
-		renderer = new THREE.WebGLRenderer({});
 
 
 		//Comportamiento y sensibilidad de la cámara
@@ -132,26 +145,28 @@ var opcionesMenu = function() {
 		// Creamos la escena para añadirle los elementos
 		scene = new THREE.Scene();
 		
-		ambient = new THREE.AmbientLight(0xfffffa); //luz casi negra, para que todo lo que no sea material brille mucho.
-		scene.add( ambient ); //añadimos la luz de ambiente a la escena
+		//ambient = new THREE.AmbientLight(0x404040); 
+		//scene.add( ambient );
 		  // Luz direccional simple, para ver los sombreados.
-  		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-  		directionalLight.position.set( 0, 0, 1 ).normalize(); //de frente a la escena
-  		
-  		scene.add( directionalLight );
+  		//var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+  		//directionalLight.position.set( 0, 1, 1 ).normalize(); //de frente a la escena sería 0,0,1
+
+  		var light = new THREE.HemisphereLight( 0xaaaaaa, 0xffffff, 1);
+		scene.add( light );
+
+  		//scene.add( directionalLight );
 
   		scene.add( camera );
 
-  		// THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
+  		THREE.ImageUtils.crossOrigin = "anonymous"; //para que el origen de las imagenes pueda ser diferente al de origen
 				
   			/// Carga de Modelo ///
-
   			//Identada para facilitar su ubicación
 
 			var loader = new THREE.OBJMTLLoader();
-			loader.load( 'models/c.obj', 'models/textures/c.mtl', 
+			loader.load( 'models/h.obj', 'models/textures/h.mtl', 
 						
-				//onProgress()
+				//onLoad()
 				function ( object ){
 
 				contenido = object;
@@ -181,10 +196,11 @@ var opcionesMenu = function() {
 				return contenido;
 
 				},
-				// onLoad()
+				// onProgress()
 				function ( xhr ) {
 					//console.log( ('Elemento ' + xhr.loaded) + ' Cargado.' );
 					console.log( (xhr.loaded / xhr.total * 100) + '% Cargado.' );
+
 					
 				},
 				// onError()
@@ -233,6 +249,7 @@ var opcionesMenu = function() {
 
         					object.material.opacity = opciones.Opacidad;
         					object.material.transparent = 	true;
+
     					}
     		})
 			
@@ -242,9 +259,7 @@ var opcionesMenu = function() {
 		
 		//Aquí tendré que poner las directivas de acción de los filtros o las 
 		//llamadas a las funciones de los filtros porque son activados durante la visualización del modelado.
-		
-		//object.material.opacity = opciones.Transparencia;
-		
+
 		render();
 	}
 
